@@ -49,8 +49,6 @@ export default function Auth() {
     router.push("sign-up");
   };
 
-  console.log("methods", methods.formState);
-
   return (
     <FormProvider {...methods}>
       <KeyboardAvoidingView className="justify-center container">
