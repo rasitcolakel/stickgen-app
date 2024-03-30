@@ -1,22 +1,41 @@
 import { router } from "expo-router";
 import { useEffect } from "react";
-import { supabase } from "./lib/supabase";
+import { supabase } from "app/lib/supabase";
+import { useSetAtom } from "jotai";
+import { sessionAtom } from "./store/auth";
 
 export default function App() {
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        router.replace("(tabs)");
-      }
-    });
+  const setSession = useSetAtom(sessionAtom);
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        router.replace("(tabs)");
-      } else {
-        router.replace("(auth)/sign-in");
-      }
-    });
+  const fetchSession = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      router.replace("(tabs)");
+      setSession({ session });
+    }
+  };
+
+  const handleAuthStateChange = (_event: string, session: any) => {
+    if (_event === "SIGNED_IN") {
+      setSession({ session });
+    }
+    if (session) {
+      router.replace("(tabs)");
+    } else {
+      router.replace("(auth)/sign-in");
+    }
+  };
+
+  useEffect(() => {
+    fetchSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return <></>;
