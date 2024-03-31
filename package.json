@@ -1,7 +1,7 @@
 {
   "name": "stickgen-app",
   "version": "1.0.0",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -31,7 +31,9 @@
     "react-native-url-polyfill": "^2.0.0",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "expo-image-picker": "~14.7.1",
+    "expo-navigation-bar": "~2.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -1,8 +1,8 @@
 import { forwardRef, useMemo } from "react";
-import { Text, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { Controller, RegisterOptions, useFormContext } from "react-hook-form";
-
-import { cn } from "app/lib/utils";
+import { cn } from "~/lib/utils";
+import { Text } from "./text";
 
 export interface InputProps
   extends React.ComponentPropsWithoutRef<typeof TextInput> {
@@ -13,24 +13,29 @@ export interface InputProps
   errorMessage?: string;
 }
 
-const Input = forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
-  ({ className, label, labelClasses, inputClasses, ...props }, ref) => (
-    <View className={cn("flex flex-col gap-1.5", className)}>
-      {label && <Text className={cn("text-base", labelClasses)}>{label}</Text>}
+const Input = forwardRef<
+  React.ElementRef<typeof TextInput>,
+  React.ComponentPropsWithoutRef<typeof TextInput> & InputProps
+>(({ className, placeholderClassName, error, errorMessage, ...props }, ref) => {
+  return (
+    <View className="w-full">
+      <Text className={cn("text-muted-foreground pb-1", props.labelClasses)}>
+        {props.placeholder}
+      </Text>
       <TextInput
+        ref={ref}
         className={cn(
-          inputClasses,
-          "border border-input py-2.5 px-4 rounded-lg hover:border-primary focus:border-primary",
-          props.error ? "border-red-500" : ""
+          "web:flex h-10 native:h-12 web:w-full rounded-md border border-input bg-background px-3 web:py-2 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground placeholder:text-muted-foreground web:ring-offset-background file:border-0 file:bg-transparent file:font-medium web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
+          props.editable === false && "opacity-50 web:cursor-not-allowed",
+          className
         )}
+        placeholderClassName={cn("text-muted-foreground", placeholderClassName)}
         {...props}
       />
-      {props.error && (
-        <Text className="text-xs text-red-500">{props.errorMessage}</Text>
-      )}
+      {error && <Text className="text-red-500">{errorMessage}</Text>}
     </View>
-  )
-);
+  );
+});
 
 type FormInputProps = InputProps & {
   name: string;
@@ -39,7 +44,7 @@ type FormInputProps = InputProps & {
 
 const FormInput = forwardRef<
   React.ElementRef<typeof TextInput>,
-  FormInputProps
+  React.ComponentPropsWithoutRef<typeof TextInput> & FormInputProps
 >(({ className, label, labelClasses, inputClasses, ...props }, ref) => {
   const methods = useFormContext();
   const errors = methods.formState.errors;

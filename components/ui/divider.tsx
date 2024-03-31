@@ -2,7 +2,7 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { View } from "react-native";
 
-import { cn } from "app/lib/utils";
+import { cn } from "~/lib/utils";
 
 const dividerVariants = cva("h-px border-t border-border", {
   variants: {

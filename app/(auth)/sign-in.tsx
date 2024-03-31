@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Alert, View, AppState } from "react-native";
-import { supabase } from "app/lib/supabase";
-import { FormInput, Input } from "app/components/Input";
-import { Button } from "app/components/Button";
+import { supabase } from "~/lib/supabase";
+import { FormInput, Input } from "~/components/ui/input";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,18 +10,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "app/components/Card";
-import { KeyboardAvoidingView } from "app/components/KeyboardAvoidingView";
-import { Divider } from "app/components/Divider";
+} from "~/components/ui/card";
+import { KeyboardAvoidingView } from "~/components/KeyboardAvoidingView";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SignInInput, signInSchema } from "app/schemas/auth";
+import { SignInInput, signInSchema } from "~/schemas/auth";
 import { router } from "expo-router";
+import { Text } from "~/components/ui/text";
+import { useColorScheme } from "~/lib/useColorScheme";
 
-// Tells Supabase Auth to continuously refresh the session automatically if
-// the app is in the foreground. When this is added, you will continue to receive
-// `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
-// if the user's session is terminated. This should only be registered once.
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
     supabase.auth.startAutoRefresh();
@@ -31,7 +28,8 @@ AppState.addEventListener("change", (state) => {
 });
 
 export default function Auth() {
-  const methods = useForm({
+  const { toggleColorScheme } = useColorScheme();
+  const methods = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
     mode: "onChange",
   });
@@ -41,7 +39,6 @@ export default function Auth() {
       email: data.email,
       password: data.password,
     });
-
     if (error) Alert.alert(error.message);
   }
 
@@ -58,7 +55,6 @@ export default function Auth() {
             <CardDescription className="text-center">
               Sign in to your account with your email and password.
             </CardDescription>
-            <Divider />
           </CardHeader>
           <CardContent className="gap-2 py-0">
             <FormInput
@@ -74,20 +70,22 @@ export default function Auth() {
               placeholder="Password"
               secureTextEntry={true}
             />
-            <Divider />
           </CardContent>
           <CardFooter>
             <View className="flex flex-col gap-2 w-full">
               <Button
-                title="Sign in"
                 disabled={methods.formState.isSubmitting}
                 onPress={methods.handleSubmit(signInWithEmail)}
-              />
-              <Button
-                variant="secondary"
-                title="Sign up"
-                onPress={goToSignUp}
-              />
+              >
+                <Text>Sign In</Text>
+              </Button>
+              <Button variant="secondary" onPress={goToSignUp}>
+                <Text>Sign Up</Text>
+              </Button>
+
+              <Button variant="secondary" onPress={() => toggleColorScheme()}>
+                <Text>Theme</Text>
+              </Button>
             </View>
           </CardFooter>
         </Card>
