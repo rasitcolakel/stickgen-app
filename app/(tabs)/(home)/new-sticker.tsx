@@ -12,6 +12,7 @@ import { supabase } from "~/lib/supabase";
 import { useAtomValue } from "jotai";
 import { userIdAtom } from "~/store/auth";
 import { NewStickerInput, newStickerSchema } from "~/schemas/stickers";
+import { router } from "expo-router";
 
 const NewSticker = () => {
   const userId = useAtomValue(userIdAtom);
@@ -57,7 +58,7 @@ const NewSticker = () => {
     const fileExt = image.split(".").pop()?.toLowerCase() ?? "jpeg";
     const path = `${userId}/${Date.now()}.${fileExt}`;
     const { data, error: uploadError } = await supabase.storage
-      .from("upload")
+      .from("stickers")
       .upload(path, arraybuffer, {
         contentType: `image/${fileExt}`,
       });
@@ -65,6 +66,22 @@ const NewSticker = () => {
     if (uploadError) {
       console.error(uploadError);
       return;
+    } else {
+      const { error: insertError, data: insertData } = await supabase
+        .from("stickers")
+        .insert([
+          {
+            image_url: path,
+            user_id: userId,
+          },
+        ]);
+
+      if (insertError) {
+        console.error(insertError);
+        return;
+      } else {
+        router.back();
+      }
     }
   };
 
