@@ -1,17 +1,24 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
+import { HomeIcon, UserIcon } from "lucide-react-native";
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
+    <Tabs>
       <Tabs.Screen
         name="(home)"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
-          ),
+          headerShown: false,
+          tabBarIcon: ({ color }) => <HomeIcon size={28} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          headerShown: false,
+          tabBarIcon: ({ color }) => <UserIcon size={28} color={color} />,
         }}
       />
     </Tabs>

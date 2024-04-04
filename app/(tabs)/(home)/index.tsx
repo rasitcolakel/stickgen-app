@@ -1,21 +1,14 @@
-import { View } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
-import { useColorScheme } from "~/lib/useColorScheme";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { supabase } from "~/lib/supabase";
 import { useEffect, useState } from "react";
 import { useAtomValue } from "jotai";
 import { userIdAtom } from "~/store/auth";
-import { getStickerImageUrl } from "~/lib/utils";
-import { Image } from "react-native";
-
-export interface Sticker {
-  id: number;
-  image_url: string;
-  status: "COMPLETED" | "IN_PROGRESS";
-  user_id: string;
-}
+import StickerCard, { Sticker } from "~/components/StickerCard";
+import ScreenContainer from "~/components/ui/screen-container";
+import RenderStickers from "~/components/RenderStickers";
 
 export default function Tab() {
   const userId = useAtomValue(userIdAtom);
@@ -24,7 +17,10 @@ export default function Tab() {
 
   const getStickers = async () => {
     try {
-      const { data, error } = await supabase.from("stickers").select("*");
+      const { data, error } = await supabase
+        .from("stickers")
+        .select("*")
+        .order("id", { ascending: false });
       if (error) {
         console.error(error);
         return;
@@ -36,15 +32,21 @@ export default function Tab() {
   };
 
   const handleInsert = (sticker: Sticker) => {
-    setStickers((prevStickers) => [...prevStickers, sticker]);
+    setStickers((prevStickers) => {
+      return [sticker, ...prevStickers];
+    });
   };
 
   const handleUpdate = (updatedSticker: Sticker) => {
-    setStickers((prevStickers) =>
-      prevStickers.map((sticker) =>
-        sticker.id === updatedSticker.id ? updatedSticker : sticker
-      )
-    );
+    setStickers((prevStickers) => {
+      return prevStickers.map((sticker) => {
+        console.log("sticker", sticker.id, updatedSticker.id);
+        if (sticker.id === updatedSticker.id) {
+          return updatedSticker;
+        }
+        return sticker;
+      });
+    });
   };
 
   const getOnParams = () => ({
@@ -91,28 +93,19 @@ export default function Tab() {
   }, [userId]);
 
   return (
-    <View className="flex flex-col items-center justify-center gap-2">
-      <Text className="text-2xl font-bold">Stickers</Text>
-      <View className="flex flex-row items-center justify-center gap-2">
-        {stickers.map((sticker) => (
-          <View
-            className="flex flex-col items-center justify-center gap-2"
-            key={sticker.id}
-          >
-            <Image
-              source={{ uri: getStickerImageUrl(sticker.image_url) }}
-              className="w-24 h-24 rounded-full"
-            />
-            <Text>{sticker.status}</Text>
-          </View>
-        ))}
+    <ScreenContainer className="px-4 flex-1">
+      <View className="flex flex-row items-center justify-between w-full">
+        <Text className="text-2xl font-bold">Your Stickers</Text>
+        <Button
+          variant="secondary"
+          onPress={() => router.push("(home)/new-sticker")}
+        >
+          <Text>New Sticker</Text>
+        </Button>
       </View>
-      <Button
-        variant="secondary"
-        onPress={() => router.push("(home)/new-sticker")}
-      >
-        <Text>New Sticker</Text>
-      </Button>
-    </View>
+      <View className="flex-1 w-full">
+        <RenderStickers stickers={stickers} />
+      </View>
+    </ScreenContainer>
   );
 }

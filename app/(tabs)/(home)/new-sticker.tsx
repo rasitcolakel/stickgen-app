@@ -13,22 +13,30 @@ import { useAtomValue } from "jotai";
 import { userIdAtom } from "~/store/auth";
 import { NewStickerInput, newStickerSchema } from "~/schemas/stickers";
 import { router } from "expo-router";
+import { FormField } from "~/components/ui/form-field";
 
 const NewSticker = () => {
   const userId = useAtomValue(userIdAtom);
   const methods = useForm<NewStickerInput>({
     resolver: zodResolver(newStickerSchema),
     mode: "onChange",
+    defaultValues: {
+      prompt: "Turn your face into a sticker",
+    },
   });
 
   const image = methods.watch("image");
+
+  const imageError = methods.formState.errors.image;
+
+  console.log(imageError);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.3,
+      aspect: [4, 4],
+      quality: 1,
     });
 
     if (!result.canceled) {
@@ -62,7 +70,6 @@ const NewSticker = () => {
       .upload(path, arraybuffer, {
         contentType: `image/${fileExt}`,
       });
-
     if (uploadError) {
       console.error(uploadError);
       return;
@@ -71,13 +78,13 @@ const NewSticker = () => {
         .from("stickers")
         .insert([
           {
+            prompt: inputs.prompt,
             image_url: path,
             user_id: userId,
           },
         ]);
 
       if (insertError) {
-        console.error(insertError);
         return;
       } else {
         router.back();
@@ -89,14 +96,20 @@ const NewSticker = () => {
     <View className="container py-4">
       <FormProvider {...methods}>
         <View className="flex items-center justify-center w-full gap-4">
-          <Text className="text-2xl font-bold text-center">New Sticker</Text>
           <FormInput name="prompt" placeholder="Prompt" className="w-full" />
-          <View className="flex flex-row items-center justify-center w-full gap-4">
-            {renderImage()}
-            <Button onPress={pickImage} variant="secondary">
-              <Text>Choose Image</Text>
-            </Button>
-          </View>
+          <FormField
+            name="image"
+            className="flex flex-col w-full gap-4"
+            label="Image"
+          >
+            <View className="w-full flex flex-row items-center justify-center gap-4">
+              {renderImage()}
+              <Button onPress={pickImage} variant="secondary">
+                <Text>Choose Image</Text>
+              </Button>
+            </View>
+          </FormField>
+
           <Button
             className="w-full"
             disabled={methods.formState.isSubmitting}
