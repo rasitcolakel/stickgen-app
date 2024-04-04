@@ -29,8 +29,6 @@ const NewSticker = () => {
 
   const imageError = methods.formState.errors.image;
 
-  console.log(imageError);
-
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,

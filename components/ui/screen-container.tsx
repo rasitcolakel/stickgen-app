@@ -10,7 +10,6 @@ type Props = ViewProps & {
 
 const ScreenContainer = (props: Props) => {
   const statusBarHeight = Constants.statusBarHeight;
-  console.log(statusBarHeight);
   return (
     <SafeAreaView
       style={{

@@ -40,7 +40,6 @@ export default function Tab() {
   const handleUpdate = (updatedSticker: Sticker) => {
     setStickers((prevStickers) => {
       return prevStickers.map((sticker) => {
-        console.log("sticker", sticker.id, updatedSticker.id);
         if (sticker.id === updatedSticker.id) {
           return updatedSticker;
         }

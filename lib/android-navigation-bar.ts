@@ -3,7 +3,6 @@ import { Platform } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 
 export async function setAndroidNavigationBar(theme: "light" | "dark") {
-  console.log("setAndroidNavigationBar", theme);
   if (Platform.OS !== "android") return;
   await NavigationBar.setButtonStyleAsync(theme === "dark" ? "light" : "dark");
   await NavigationBar.setBackgroundColorAsync(

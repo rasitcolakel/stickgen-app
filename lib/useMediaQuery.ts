@@ -7,8 +7,6 @@ export const useMediaQuery = (query: string) => {
     Dimensions.get("window").width < parseInt(query)
   );
 
-  console.log(Dimensions.get("window").width);
-
   useEffect(() => {
     const handler = ({ window }: { window: { width: number } }) =>
       setMatches(window.width < parseInt(query));

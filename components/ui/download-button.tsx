@@ -31,7 +31,6 @@ export const DownloadButton = ({ imageUrl, title }: DownloadButtonProps) => {
       const res = await FileSystem.downloadAsync(imageUrl, fileUri);
       await saveFile(res.uri);
     } catch (err) {
-      console.log("Download err: ", err);
       setStatus("ERROR");
     }
   };
